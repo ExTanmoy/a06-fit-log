@@ -1,5 +1,6 @@
 import React from "react";
 import WorkoutCard from "./WorkoutCard";
+import { IWorkoutType } from "@/types/workout-type";
 
 const getLibrary = async () => {
   const response = await fetch(
@@ -12,11 +13,11 @@ const getLibrary = async () => {
 
 const Library = async () => {
   const libraryData = await getLibrary();
-//   console.log(libraryData)
+  console.log(libraryData)
 
   return (
-    <section className="bg-[#0d0f12] px-4 py-8 text-white sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
+    <section className="container mx-auto">
+      <div className=" text-white py-8 px-4 sm:px-6 lg:px-8">
 
         {/* ================= Heading ================= */}
         <div className="mb-6">
@@ -31,7 +32,7 @@ const Library = async () => {
 
         {/* ================= Workout Cards ================= */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {libraryData.map((card) => {
+          {libraryData.map((card:IWorkoutType) => {
             return <WorkoutCard key={card.id} card={card}></WorkoutCard>
           })}
         </div>
