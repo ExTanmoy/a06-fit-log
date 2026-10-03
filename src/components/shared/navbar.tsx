@@ -5,7 +5,7 @@ import logo from "@/assets/logo.png";
 
 const Navbar = () => {
   return (
-    <nav className=" sticky top-0 z-10 border-b border-[#22262e] bg-[#0e0f0f] backdrop-blur">
+    <nav className=" sticky top-0 z-50 border-b border-[#22262e] bg-[#0e0f0f] backdrop-blur">
       <section className="container mx-auto flex justify-between items-center h-14 sm:h-20 px-4 sm:px-6 lg:px-8">
         <div>
           {/* Left side (logo) */}
@@ -17,8 +17,9 @@ const Navbar = () => {
 
         {/* Center (NavLinks) */}
         <div className="flex items-center gap-4 font-inter text-sm font-medium sm:gap-5">
-          <a href="">Workouts</a>
-          <a href="">My Plan</a>
+          <Link href="/saved">Workouts</Link>
+          <Link href="/my-plan">My Plan</Link>
+          <Link href="/workout-info/2">info</Link>
         </div>
 
         {/* Right Side  */}

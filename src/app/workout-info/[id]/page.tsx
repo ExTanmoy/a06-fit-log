@@ -1,3 +1,5 @@
+import PlanButton from "@/components/Buttons/PlanButton";
+import SaveButton from "@/components/Buttons/SaveButton";
 import { IWorkoutType } from "@/types/workout-type";
 import Image from "next/image";
 import React from "react";
@@ -37,7 +39,7 @@ const WorkoutInfoPage = async ({ params }: IWorkoutInfoPage) => {
   }
 
   return (
-    <main className="min-h-screen bg-[#0d0f12] px-4 py-8 text-white sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[#0d0f12] px-4 py-8 pt-20 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
 
@@ -199,13 +201,9 @@ const WorkoutInfoPage = async ({ params }: IWorkoutInfoPage) => {
 
             {/* ================= ACTION BUTTONS ================= */}
             <div className="mt-6 flex flex-wrap gap-3">
-              <button className="rounded-lg bg-lime-400 px-4 py-2.5 text-sm font-bold text-black transition hover:bg-lime-300">
-                ＋ Add to today&apos;s plan
-              </button>
+              <PlanButton workout ={workout}></PlanButton>
 
-              <button className="rounded-lg border border-gray-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:border-white hover:bg-white/5">
-                ♡ Save for later
-              </button>
+              <SaveButton workout={workout}></SaveButton>
             </div>
           </div>
         </div>
