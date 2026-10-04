@@ -4,7 +4,10 @@ import { IWorkoutType } from "@/types/workout-type";
 import React, { useContext } from "react";
 
 const PlanButton = ({workout}: {workout:IWorkoutType}) => {
-    const {plan, setPlan} = useContext(workoutContext);
+    const {plan, setPlan} = useContext(workoutContext) as {
+      plan: IWorkoutType[];
+      setPlan: React.Dispatch<React.SetStateAction<IWorkoutType[]>>;
+    };
     
 
     const handlePlan = () => {
