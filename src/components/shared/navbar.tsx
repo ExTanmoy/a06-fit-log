@@ -1,7 +1,7 @@
 'use client';
 import Image from "next/image";
 import Link from "next/link";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import logo from "@/assets/logo.png";
 import { workoutContext } from "@/context/WorkoutContext";
 import { IWorkoutType } from "@/types/workout-type";
@@ -16,7 +16,20 @@ const Navbar = () => {
   // Pathname for active
   const pathname = usePathname();
 
+//Hydration error solving
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() =>{
+    const timer = setTimeout(() =>{
+      setIsMounted(true);
+    }, 0)
+    return () => clearTimeout(timer)
+  }, []);
 
+  // Hydration error solving (But showing error in eslint)
+  // const [isMounted, setIsMounted] = useState(false);
+  // useEffect(() =>{
+  //   setIsMounted(true);
+  // }, [])
   
   return (
     <nav className=" sticky top-0 z-50 border-b border-[#22262e] bg-[#0e0f0f] backdrop-blur">
@@ -48,10 +61,10 @@ const Navbar = () => {
         {/* Right Side  */}
         <div className="flex items-center gap-4 text-sm font-medium sm:gap-5 font-inter">
           <Link href="/my-plan">
-            Plan <span className="bg-accent rounded-full px-3 py-1 text-black font-bold">{plan.length}</span>
+            Plan <span className="bg-accent rounded-full px-3 py-1 text-black font-bold">{isMounted ? plan.length : 0}</span>
           </Link>
           <Link href="/my-plan">
-            Save <span className="border border-white rounded-full px-3 py-1 text-white font-bold">{save.length}</span>
+            Save <span className="border border-white rounded-full px-3 py-1 text-white font-bold">{isMounted ? save.length : 0}</span>
           </Link>
         </div>
       </section>

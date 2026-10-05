@@ -17,15 +17,39 @@ const MyPlanPage = () => {
     save: IWorkoutType[];
     setSave: React.Dispatch<React.SetStateAction<IWorkoutType[]>>;
   };
-//   console.log("todayplan", plan);
-//   console.log("save", save);
+  //   console.log("todayplan", plan);
+  //   console.log("save", save);
 
-//   Active Tab state
+  // Sort of Workouts
+  const [sortBy, setSortBy] = useState < 'duration' | 'calories' | 'rating' > ('duration');
+  // console.log("sortBy", sortBy);
+
+  const sortWorkout = (workout: IWorkoutType[]) => {
+    const sortedWorkout = [...workout];
+
+    if(sortBy === 'duration'){
+      sortedWorkout.sort((a,b) => a.duration - b.duration);
+    } else if (sortBy === 'calories'){
+      sortedWorkout.sort((a,b) => b.caloriesBurned - a.caloriesBurned);
+    } else if (sortBy === 'rating'){
+      sortedWorkout.sort((a,b) => b.rating - a.rating)
+    }
+    return sortedWorkout
+  }
+
+  const sortedPlan = sortWorkout(plan);
+  const sortSaved = sortWorkout(save);
+
+  // console.log("sortedplan", sortedPlan);
+  // console.log("sortedsaved", sortSaved);
+
+
+
+  //   Active Tab state
   const [activeTab, setActiveTab] = useState<"plan" | "saved">("plan");
   const isSaved = activeTab === "saved";
 
-
-    //   state of mark as done of plan
+  //   state of mark as done of plan
   const [doneById, setDoneById] = useState<number[]>([]);
 
   const handleToggleDoneId = (id: number) => {
@@ -36,25 +60,22 @@ const MyPlanPage = () => {
       toast.info("Undone");
       return;
     }
-    console.log(doneById, '=> Done by id')
+    // console.log(doneById, "=> Done by id");
     setDoneById((prev) => [...prev, id]);
     toast.success("Marked as done");
   };
-  
 
   //   Remove Handler of Plan Tab
   const handleRemovePlan = (p: IWorkoutType) => {
-      setPlan((prevPlan) => prevPlan.filter((plan) => plan.id !== p.id));
-      toast.info(`${p.name} is removed from Today's Plan`)
-  }
+    setPlan((prevPlan) => prevPlan.filter((plan) => plan.id !== p.id));
+    toast.info(`${p.name} is removed from Today's Plan`);
+  };
 
   //   Remove Handler of Saved Tab
   const handleRemoveSave = (s: IWorkoutType) => {
-      setSave((prevSave) => prevSave.filter((save) => save.id !== s.id));
-      toast.info(`${s.name} is removed from Saved`)
-  }
-  
-  
+    setSave((prevSave) => prevSave.filter((save) => save.id !== s.id));
+    toast.info(`${s.name} is removed from Saved`);
+  };
 
   // Exercise Duration (Minutes) (Both)
   const planMinutes = plan.reduce(
@@ -66,7 +87,7 @@ const MyPlanPage = () => {
     0,
   );
 
-  // Exercise Calories
+  // Exercise Calories (Both)
   const planCalories = plan.reduce(
     (total, workout) => total + workout.caloriesBurned,
     0,
@@ -110,184 +131,220 @@ const MyPlanPage = () => {
       {/* Tab Area */}
       <div className="py-4">
         {/* Tab Button Container */}
-        <div className="inline-flex items-center bg-base-200 p-1 rounded-xl">
-          <button
-            onClick={() => setActiveTab("plan")}
-            className={`px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 ${
-              activeTab === "plan"
-                ? "bg-black text-accent shadow-md"
-                : "text-gray-500 hover:text-white cursor-pointer"
-            }`}
-          >
-            Today&apos;s Plan
-          </button>
+        <div className="flex justify-between">
+          <div className="inline-flex items-center bg-base-200 p-1 rounded-xl">
+            <button
+              onClick={() => setActiveTab("plan")}
+              className={`px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 ${
+                activeTab === "plan"
+                  ? "bg-black text-accent shadow-md"
+                  : "text-gray-500 hover:text-white cursor-pointer"
+              }`}
+            >
+              Today&apos;s Plan
+            </button>
 
-          <button
-            onClick={() => setActiveTab("saved")}
-            className={`px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 ${
-              activeTab === "saved"
-                ? "bg-black text-accent shadow-md"
-                : "text-gray-500 hover:text-white cursor-pointer"
-            }`}
-          >
-            Saved
-          </button>
+            <button
+              onClick={() => setActiveTab("saved")}
+              className={`px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 ${
+                activeTab === "saved"
+                  ? "bg-black text-accent shadow-md"
+                  : "text-gray-500 hover:text-white cursor-pointer"
+              }`}
+            >
+              Saved
+            </button>
+          </div>
+
+          {/* Sort */}
+          <div>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as 'duration' | 'calories' | 'rating')}
+              defaultValue="Pick a color" 
+              className="select"
+            >
+              <option disabled={true}>Pick a color</option>
+              <option value={'duration'}>Duration</option>
+              <option value={'calories'}>Calories</option>
+              <option value={'rating'}>Rating</option>
+            </select>
+          </div>
         </div>
 
         {/* Tab Content Area */}
         <div className="mt-6">
-
           {/* -------------------------------- Today's Plan Area --------------------------------- */}
-          {activeTab === "plan" && (
+          {activeTab === "plan" &&
+            (plan.length > 0 ? (
+              <div className="space-y-5">
+                {sortedPlan.map((p) => {
+                  const isDone = doneById.includes(p.id);
+                  return (
+                    <div
+                      key={p.id}
+                      className="p-4 bg-base-200 border border-gray-800 rounded-xl text-white"
+                    >
+                      <div className="grid grid-cols-2 justify-between">
+                        {/* Left Side - Image & Info */}
+                        <div className="flex gap-4">
+                          <Image
+                            src={p.image}
+                            alt={p.name}
+                            width={150}
+                            height={100}
+                            className="h-20 w-30 rounded-xl object-cover"
+                          />
+                          <div className="space-y-1">
+                            <div className="flex gap-4 items-center">
+                              <h3
+                                className={`text-xl font-bold font-oswald tracking-wide transition-all ${
+                                  isDone
+                                    ? "line-through text-gray-400"
+                                    : "text-white"
+                                }`}
+                              >
+                                {p.name}
+                              </h3>
 
-            plan.length > 0 ? (
-            <div className="space-y-5">
-              {plan.map((p) => {
-                const isDone = doneById.includes(p.id)
-                return(
-                <div
-                  key={p.id}
-                  className="p-4 bg-base-200 border border-gray-800 rounded-xl text-white"
-                >
-                  <div className="grid grid-cols-2 justify-between">
+                              {/* Done Badge */}
+                              {isDone && (
+                                <span className="bg-accent-bg text-[#679e15] font-inter text-[10px] font-bold px-2 py-0.5 border rounded-lg ">
+                                  DONE
+                                </span>
+                              )}
+                            </div>
 
-                    {/* Left Side - Image & Info */}
-                    <div className="flex gap-4">
-                      <Image
-                        src={p.image}
-                        alt={p.name}
-                        width={150}
-                        height={100}
-                        className="h-20 w-30 rounded-xl object-cover"
-                      />
-                      <div className="space-y-1">
-                        <div className="flex gap-4 items-center">
-                            <h3 className={`text-xl font-bold font-oswald tracking-wide transition-all ${
-                            isDone ? 'line-through text-gray-400' : 'text-white'
-                            }`}>
-                            {p.name}
-                            </h3>
+                            <p className=" text-sm text-gray-400">
+                              {p.equipment}
+                            </p>
 
-                            {/* Done Badge */}
-                            {isDone && (
-                                <span className="bg-accent-bg text-[#679e15] font-inter text-[10px] font-bold px-2 py-0.5 border rounded-lg ">DONE</span>
-                            )}
+                            {/* Duration, Calory & Rating */}
+                            <div className="flex items-center gap-3 mt-3 text-sm">
+                              <span className="flex items-center gap-1 ">
+                                <TiStopwatch className="text-accent" />{" "}
+                                {p.duration}
+                              </span>
+                              <span className="flex items-center gap-1 ">
+                                <FaFire className="text-accent" />{" "}
+                                {p.caloriesBurned}
+                              </span>
+                              <span className="flex items-center gap-1 te">
+                                <FaStar className="text-accent" /> {p.rating}
+                              </span>
+                            </div>
+                          </div>
                         </div>
 
-                        <p className=" text-sm text-gray-400">{p.equipment}</p>
+                        {/* Right side - Action Button */}
+                        <div className="flex gap-2 items-center justify-end">
+                          <Link href={`/workout-info/${p.id}`}>
+                            <button className="text-sm font-semibold font-inter border border-white rounded-full px-3 py-2 hover:bg-gray-600 cursor-pointer">
+                              View Details
+                            </button>
+                          </Link>
 
-                        {/* Duration, Calory & Rating */}
-                        <div className="flex items-center gap-3 mt-3 text-sm">
-                            <span className="flex items-center gap-1 ">
-                                <TiStopwatch className="text-accent"/> {p.duration}
-                            </span>
-                            <span className="flex items-center gap-1 ">
-                                <FaFire className="text-accent"/> {p.caloriesBurned}
-                            </span>
-                            <span className="flex items-center gap-1 te">
-                                <FaStar className="text-accent"/> {p.rating}
-                            </span>
+                          <button
+                            onClick={() => handleToggleDoneId(p.id)}
+                            className={`text-sm font-semibold text-black font-inter border rounded-full px-3 py-2 bg-accent hover:bg-[#9ab32d] transition-all duration-200 cursor-pointer ${
+                              isDone ? "opacity-50" : ""
+                            }`}
+                          >
+                            {" "}
+                            {isDone ? "✔ Completed" : "Mark as Done"}
+                          </button>
+                          <CiCircleRemove
+                            onClick={() => handleRemovePlan(p)}
+                            className="text-4xl text-red-400 hover:text-red-700 cursor-pointer"
+                          />
                         </div>
                       </div>
                     </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="container mx-auto bg-base-200 p-10 text-center space-y-3 rounded-2xl">
+                <h3 className="text-xl text-amber-50 font-medium font-oswald uppercase tracking-wider">
+                  Nothing here yet{" "}
+                </h3>
+                <p className="font-inter text-[#c4c8d3]">
+                  Browse the library and add a lift to get today moving.
+                </p>
+                <Link href="/">
+                  <button className="bg-accent hover:bg-[#9ab32d] cursor-pointer text-black text-sm font-semibold px-3 py-2 rounded-2xl font-inter">
+                    {" "}
+                    Go to workouts{" "}
+                  </button>
+                </Link>
+              </div>
+            ))}
 
-                    {/* Right side - Action Button */}
-                    <div className="flex gap-2 items-center justify-end">
-                        <Link href={`/workout-info/${p.id}`}>
-                            <button className="text-sm font-semibold font-inter border border-white rounded-full px-3 py-2 hover:bg-gray-600 cursor-pointer">View Details</button>
-                        </Link>
-                      
-                      <button 
-                        onClick={() => handleToggleDoneId(p.id)}
-                        className={`text-sm font-semibold text-black font-inter border rounded-full px-3 py-2 bg-accent hover:bg-[#9ab32d] transition-all duration-200 cursor-pointer ${
-                            isDone
-                                ? 'opacity-50'
-                                : ''
-                        }`}>  {isDone ? '✔ Completed' : 'Mark as Done'}</button>
-                      <CiCircleRemove 
-                        onClick={() =>handleRemovePlan(p)}
-                        className="text-4xl text-red-400 hover:text-red-700 cursor-pointer" 
-                      />
-                    </div>
-                  </div>
-                </div>
-               )
-            })}
-            </div> )
-            :
-          ( 
-            <div className="container mx-auto bg-base-200 p-10 text-center space-y-3 rounded-2xl">
-              <h3 className="text-xl text-amber-50 font-medium font-oswald uppercase tracking-wider">Nothing here yet </h3>
-              <p className="font-inter text-[#c4c8d3]">Browse the library and add a lift to get today moving.</p>
-              <Link href='/'>
-                <button className="bg-accent hover:bg-[#9ab32d] cursor-pointer text-black text-sm font-semibold px-3 py-2 rounded-2xl font-inter"> Go to workouts </button>
-              </Link>
-            </div>
-          )
-          )}
-
-
-        {/* -----------------------------     Saved For Later Area     ----------------------- */}
+          {/* -----------------------------     Saved For Later Area     ----------------------- */}
 
           {activeTab === "saved" && (
             <div className="space-y-5">
-              {save.map((s) => {
-                
-                return(
-                <div
-                  key={s.id}
-                  className="p-4 bg-base-200 border border-gray-800 rounded-xl text-white"
-                >
-                  <div className="grid grid-cols-2 justify-between">
-
-                    {/* Left Side - Image & Info */}
-                    <div className="flex gap-4">
-                      <Image
-                        src={s.image}
-                        alt={s.name}
-                        width={150}
-                        height={100}
-                        className="h-20 w-30 rounded-xl object-cover"
-                      />
-                      <div className="space-y-1">
-                        <div className="flex gap-4 items-center">
+              {sortSaved.map((s) => {
+                return (
+                  <div
+                    key={s.id}
+                    className="p-4 bg-base-200 border border-gray-800 rounded-xl text-white"
+                  >
+                    <div className="grid grid-cols-2 justify-between">
+                      {/* Left Side - Image & Info */}
+                      <div className="flex gap-4">
+                        <Image
+                          src={s.image}
+                          alt={s.name}
+                          width={150}
+                          height={100}
+                          className="h-20 w-30 rounded-xl object-cover"
+                        />
+                        <div className="space-y-1">
+                          <div className="flex gap-4 items-center">
                             <h3 className="text-xl font-bold font-oswald tracking-wide transition-all">
-                            {s.name}
+                              {s.name}
                             </h3>
-                        </div>
+                          </div>
 
-                        <p className=" text-sm text-gray-400">{s.equipment}</p>
+                          <p className=" text-sm text-gray-400">
+                            {s.equipment}
+                          </p>
 
-                        {/* Duration, Calory & Rating */}
-                        <div className="flex items-center gap-3 mt-3 text-sm">
+                          {/* Duration, Calory & Rating */}
+                          <div className="flex items-center gap-3 mt-3 text-sm">
                             <span className="flex items-center gap-1 ">
-                                <TiStopwatch className="text-accent"/> {s.duration}
+                              <TiStopwatch className="text-accent" />{" "}
+                              {s.duration}
                             </span>
                             <span className="flex items-center gap-1 ">
-                                <FaFire className="text-accent"/> {s.caloriesBurned}
+                              <FaFire className="text-accent" />{" "}
+                              {s.caloriesBurned}
                             </span>
                             <span className="flex items-center gap-1 te">
-                                <FaStar className="text-accent"/> {s.rating}
+                              <FaStar className="text-accent" /> {s.rating}
                             </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Right side - Action Button */}
-                    <div className="flex gap-2 items-center justify-end">
-                      <Link href={`/workout-info/${s.id}`}>
-                          <button className="text-sm font-semibold font-inter border border-white rounded-full px-3 py-2 hover:bg-gray-600 cursor-pointer">View Details</button>
-                      </Link>
-                      
-                      <CiCircleRemove 
-                        onClick={() =>handleRemoveSave(s)}
-                        className="text-4xl text-red-400 hover:text-red-700 cursor-pointer" 
-                      />
+                      {/* Right side - Action Button */}
+                      <div className="flex gap-2 items-center justify-end">
+                        <Link href={`/workout-info/${s.id}`}>
+                          <button className="text-sm font-semibold font-inter border border-white rounded-full px-3 py-2 hover:bg-gray-600 cursor-pointer">
+                            View Details
+                          </button>
+                        </Link>
+
+                        <CiCircleRemove
+                          onClick={() => handleRemoveSave(s)}
+                          className="text-4xl text-red-400 hover:text-red-700 cursor-pointer"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-               )
-            })}
+                );
+              })}
             </div>
           )}
         </div>
