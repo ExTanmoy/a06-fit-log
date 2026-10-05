@@ -2,28 +2,32 @@
 import { workoutContext } from "@/context/WorkoutContext";
 import { IWorkoutType } from "@/types/workout-type";
 import React, { useContext } from "react";
+import { toast } from "react-toastify";
 
-const SaveButton = ({workout}: {workout: IWorkoutType}) => {
-
-    const {save, setSave} = useContext(workoutContext)
-
+const SaveButton = ({workout}: {workout:IWorkoutType}) => {
+    const {save, setSave} = useContext(workoutContext) as {
+      save: IWorkoutType[];
+      setSave: React.Dispatch<React.SetStateAction<IWorkoutType[]>>;
+    };
+    
+    const isExistSave = save.some((item) => item.id === workout.id);
     const handleSave = () => {
         
-        console.log('Save button clicked', save)
-        console.log('workout save' , workout)
-        
-        setSave([...save, workout])
-        
+
+        if (isExistSave){
+          return;
+        }
+        toast.success(`${workout.name} is saved for later`)
+        setSave([...save, workout]);
     }
 
   return (
-
-
     <button 
-    className="rounded-lg border border-gray-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:border-white hover:bg-white/5"
-    onClick={() => handleSave()}
-    >
-      ♡ Save for later
+      onClick={handleSave}
+      disabled={isExistSave}
+      className="rounded-lg px-4 py-2.5 text-sm font-bold text-white transition hover:bg-gray-900 border border-amber-50 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+    > 
+      {isExistSave === false ? "Save for later": "✔ Already saved" }
     </button>
   );
 };

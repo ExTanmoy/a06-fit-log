@@ -4,28 +4,30 @@ import { IWorkoutType } from "@/types/workout-type";
 import Image from "next/image";
 import React from "react";
 
-interface IWorkoutInfoPage {
-  params: Promise<{
-    id: string;
-  }>;
+interface IWorkoutInfoPageParams {
+  id: string;
 }
 
-const getLibrary = async () => {
-  const response = await fetch(
+interface IWorkoutInfoPage {
+  params: Promise<IWorkoutInfoPageParams>;
+}
+
+const getLibrary = async (): Promise<IWorkoutType[]> => {
+  const response: Response = await fetch(
     "https://api.api-store.workers.dev/api/fitlog"
   );
 
-  const data = await response.json();
+  const data: IWorkoutType[] = await response.json();
   return data;
 };
 
 const WorkoutInfoPage = async ({ params }: IWorkoutInfoPage) => {
   const { id } = await params;
 
-  const libraryData = await getLibrary();
+  const libraryData: IWorkoutType[] = await getLibrary();
 
-  const workout = libraryData.find(
-    (card: IWorkoutType) => card.id === Number(id)
+  const workout: IWorkoutType | undefined = libraryData.find(
+    (card: IWorkoutType): boolean => card.id === Number(id)
   );
 
   if (!workout) {
@@ -44,7 +46,7 @@ const WorkoutInfoPage = async ({ params }: IWorkoutInfoPage) => {
         <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
 
           {/* ================= IMAGE ================= */}
-          <div className=" sticky top-25 overflow-hidden rounded-xl border border-gray-700/70 bg-[#191c21]">
+          <div className="lg:sticky lg:top-25 overflow-hidden rounded-xl border border-gray-700/70 bg-[#191c21]">
             <Image
               src={workout.image}
               alt={workout.name}
