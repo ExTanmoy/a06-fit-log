@@ -74,7 +74,7 @@ const WorkoutInfoPage = async ({ params }: IWorkoutInfoPage) => {
               {workout.muscleGroups.map((muscle) => (
                 <span
                   key={muscle}
-                  className="rounded-full bg-lime-400 px-3 py-1 text-xs font-bold text-black"
+                  className="rounded-full bg-accent px-3 py-1 text-xs font-bold text-black"
                 >
                   {muscle}
                 </span>
@@ -190,7 +190,7 @@ const WorkoutInfoPage = async ({ params }: IWorkoutInfoPage) => {
                       key={index}
                       className="flex gap-2 text-sm leading-6 text-gray-200"
                     >
-                      <span className="font-bold text-lime-400">
+                      <span className="font-bold text-accent">
                         {index + 1}.
                       </span>
 

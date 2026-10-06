@@ -1,6 +1,7 @@
 "use client";
 
 import { workoutContext } from "@/context/WorkoutContext";
+import { useIsMounted } from "@/hooks/useIsmounted";
 import { IWorkoutType } from "@/types/workout-type";
 import Image from "next/image";
 import Link from "next/link";
@@ -34,7 +35,7 @@ const MyPlanPage = () => {
     } else if (sortBy === 'rating'){
       sortedWorkout.sort((a,b) => b.rating - a.rating)
     }
-    return sortedWorkout
+    return sortedWorkout;
   }
 
   const sortedPlan = sortWorkout(plan);
@@ -96,6 +97,17 @@ const MyPlanPage = () => {
     (total, workout) => total + workout.caloriesBurned,
     0,
   );
+  
+  // Hydration error solving
+  // const [isMounted, setIsMounted] = useState(false);
+  
+  // useEffect(() => {
+  //   setIsMounted(true);
+  // }, []);
+  const isMounted = useIsMounted();
+  if(!isMounted){
+    return null;
+  }
 
   return (
     // Heading
@@ -132,7 +144,7 @@ const MyPlanPage = () => {
       <div className="py-4">
         {/* Tab Button Container */}
         <div className="flex justify-between">
-          <div className="inline-flex items-center bg-base-200 p-1 rounded-xl">
+          <div className="inline-flex items-center bg-accent-bg p-1 rounded-xl">
             <button
               onClick={() => setActiveTab("plan")}
               className={`px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 ${
@@ -160,11 +172,10 @@ const MyPlanPage = () => {
           <div>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'duration' | 'calories' | 'rating')}
-              defaultValue="Pick a color" 
-              className="select"
+              onChange={(e) => setSortBy(e.target.value as 'duration' | 'calories' | 'rating')} 
+              className="select w-60 rounded p-5 text-accent font-bold bg-accent-bg"
             >
-              <option disabled={true}>Pick a color</option>
+              
               <option value={'duration'}>Duration</option>
               <option value={'calories'}>Calories</option>
               <option value={'rating'}>Rating</option>

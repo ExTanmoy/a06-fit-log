@@ -1,11 +1,12 @@
 'use client';
 import Image from "next/image";
 import Link from "next/link";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import logo from "@/assets/logo.png";
 import { workoutContext } from "@/context/WorkoutContext";
 import { IWorkoutType } from "@/types/workout-type";
 import { usePathname } from "next/navigation";
+import { useIsMounted } from "@/hooks/useIsmounted";
 
 const Navbar = () => {
   const {plan, save} = useContext(workoutContext) as {
@@ -16,14 +17,20 @@ const Navbar = () => {
   // Pathname for active
   const pathname = usePathname();
 
+  // Hydration error solving
+  const isMounted = useIsMounted();
+  if(!isMounted){
+    return null;
+  }
+
 //Hydration error solving
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() =>{
-    const timer = setTimeout(() =>{
-      setIsMounted(true);
-    }, 0)
-    return () => clearTimeout(timer)
-  }, []);
+  // const [isMounted, setIsMounted] = useState(false);
+  // useEffect(() =>{
+  //   const timer = setTimeout(() =>{
+  //     setIsMounted(true);
+  //   }, 0)
+  //   return () => clearTimeout(timer)
+  // }, []);
 
   // Hydration error solving (But showing error in eslint)
   // const [isMounted, setIsMounted] = useState(false);
@@ -61,10 +68,10 @@ const Navbar = () => {
         {/* Right Side  */}
         <div className="flex items-center gap-4 text-sm font-medium sm:gap-5 font-inter">
           <Link href="/my-plan">
-            Plan <span className="bg-accent rounded-full px-3 py-1 text-black font-bold">{isMounted ? plan.length : 0}</span>
+            Plan <span className="bg-accent rounded-full px-3 py-1 text-black font-bold">{plan.length}</span>
           </Link>
           <Link href="/my-plan">
-            Save <span className="border border-white rounded-full px-3 py-1 text-white font-bold">{isMounted ? save.length : 0}</span>
+            Save <span className="border border-white rounded-full px-3 py-1 text-white font-bold">{save.length}</span>
           </Link>
         </div>
       </section>

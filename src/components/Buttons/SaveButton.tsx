@@ -1,5 +1,6 @@
 'use client';
 import { workoutContext } from "@/context/WorkoutContext";
+import { useIsMounted } from "@/hooks/useIsmounted";
 import { IWorkoutType } from "@/types/workout-type";
 import React, { useContext } from "react";
 import { toast } from "react-toastify";
@@ -20,6 +21,12 @@ const SaveButton = ({workout}: {workout:IWorkoutType}) => {
         toast.success(`${workout.name} is saved for later`)
         setSave([...save, workout]);
     }
+
+      // hydration error solving
+      const isMounted = useIsMounted();
+      if(!isMounted){
+        return null;
+      }    
 
   return (
     <button 
