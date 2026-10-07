@@ -5,7 +5,7 @@ import { useIsMounted } from "@/hooks/useIsmounted";
 import { IWorkoutType } from "@/types/workout-type";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { CiCircleRemove } from "react-icons/ci";
 import { FaFire, FaStar } from "react-icons/fa";
 import { TiStopwatch } from "react-icons/ti";
@@ -51,7 +51,21 @@ const MyPlanPage = () => {
   const isSaved = activeTab === "saved";
 
   //   state of mark as done of plan
-  const [doneById, setDoneById] = useState<number[]>([]);
+  const [doneById, setDoneById] = useState<unknown[]>(() =>{
+          if (typeof window !== "undefined") {
+      const doneList = localStorage.getItem("workout_done");
+      return doneList ? JSON.parse(doneList) : [];
+    }
+    return [];
+  });
+  
+  // Update local storage if 'doneById' Change
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('workout_done', JSON.stringify(doneById));
+    }
+  }, [doneById]);
 
   const handleToggleDoneId = (id: number) => {
     const isDone = doneById.includes(id);
@@ -104,6 +118,7 @@ const MyPlanPage = () => {
   // useEffect(() => {
   //   setIsMounted(true);
   // }, []);
+
   const isMounted = useIsMounted();
   if(!isMounted){
     return null;
@@ -111,7 +126,7 @@ const MyPlanPage = () => {
 
   return (
     // Heading
-    <section className="container mx-auto pt-15 px-4 sm:px-6 lg:px-8">
+    <section className="container mx-auto text-center md:text-start pt-15 px-4 sm:px-6 lg:px-8">
       <h1 className="font-oswald text-4xl sm:text-5xl font-bold ">MY PLAN</h1>
       <p className="font-inter text-[#c4c8d3] text-sm mt-3">
         Cap of five lifts for today. Finish them, then load more.
@@ -120,20 +135,20 @@ const MyPlanPage = () => {
       {/* Workout Statistics / Metrics */}
 
       <div className="bg-base-200 rounded-2xl my-10 grid grid-cols-1 md:grid-cols-3 ">
-        <div className="p-5 space-y-2 border-r border-dashed border-gray-700">
+        <div className="p-5 space-y-2 border-b md:border-0 md:border-r border-dashed border-gray-700">
           <p className=" text-[#c4c8d3] text-xs font-inter">Exercises</p>
           <h2 className="text-3xl font-bold text-accent font-inter">
             {!isSaved ? plan.length : save.length}
           </h2>
         </div>
-        <div className="p-5 space-y-2 border-r border-dashed border-gray-700 ">
-          <p className=" text-[#c4c8d3] text-xs font-inter">Exercises</p>
+        <div className="p-5 space-y-2 border-b md:border-0 md:border-r border-dashed border-gray-700 ">
+          <p className=" text-[#c4c8d3] text-xs font-inter">Minutes</p>
           <h2 className="text-3xl font-bold font-inter">
             {!isSaved ? planMinutes : saveMinutes}
           </h2>
         </div>
         <div className="p-5 space-y-2 ">
-          <p className=" text-[#c4c8d3] text-xs font-inter">Exercises</p>
+          <p className=" text-[#c4c8d3] text-xs font-inter">Calories</p>
           <h2 className="text-3xl font-bold font-inter">
             {!isSaved ? planCalories : saveCalories}
           </h2>
@@ -142,9 +157,11 @@ const MyPlanPage = () => {
 
       {/* Tab Area */}
       <div className="py-4">
-        {/* Tab Button Container */}
-        <div className="flex justify-between">
-          <div className="inline-flex items-center bg-accent-bg p-1 rounded-xl">
+        {/* Tab Button Container & Sort */}
+        <div className="flex flex-col items-center  gap-2 sm:flex-row  sm:justify-between">
+          
+          {/* Tab */}
+          <div className="  bg-accent-bg p-1 rounded-xl">
             <button
               onClick={() => setActiveTab("plan")}
               className={`px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 ${
@@ -173,7 +190,7 @@ const MyPlanPage = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'duration' | 'calories' | 'rating')} 
-              className="select w-60 rounded p-5 text-accent font-bold bg-accent-bg"
+              className="select h-12 w-50  rounded p-5 text-accent font-bold bg-accent-bg"
             >
               
               <option value={'duration'}>Duration</option>
@@ -186,8 +203,8 @@ const MyPlanPage = () => {
         {/* Tab Content Area */}
         <div className="mt-6">
           {/* -------------------------------- Today's Plan Area --------------------------------- */}
-          {activeTab === "plan" &&
-            (plan.length > 0 ? (
+          {activeTab === "plan" && (
+            plan.length > 0 ? (
               <div className="space-y-5">
                 {sortedPlan.map((p) => {
                   const isDone = doneById.includes(p.id);
@@ -196,9 +213,9 @@ const MyPlanPage = () => {
                       key={p.id}
                       className="p-4 bg-base-200 border border-gray-800 rounded-xl text-white"
                     >
-                      <div className="grid grid-cols-2 justify-between">
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 justify-between">
                         {/* Left Side - Image & Info */}
-                        <div className="flex gap-4">
+                        <div className="flex gap-4 flex-wrap">
                           <Image
                             src={p.image}
                             alt={p.name}
@@ -206,7 +223,7 @@ const MyPlanPage = () => {
                             height={100}
                             className="h-20 w-30 rounded-xl object-cover"
                           />
-                          <div className="space-y-1">
+                          <div className="space-y-1 text-start">
                             <div className="flex gap-4 items-center">
                               <h3
                                 className={`text-xl font-bold font-oswald tracking-wide transition-all ${
@@ -231,7 +248,7 @@ const MyPlanPage = () => {
                             </p>
 
                             {/* Duration, Calory & Rating */}
-                            <div className="flex items-center gap-3 mt-3 text-sm">
+                            <div className="flex items-center gap-3 mt-3 text-sm flex-wrap">
                               <span className="flex items-center gap-1 ">
                                 <TiStopwatch className="text-accent" />{" "}
                                 {p.duration}
@@ -248,11 +265,12 @@ const MyPlanPage = () => {
                         </div>
 
                         {/* Right side - Action Button */}
-                        <div className="flex gap-2 items-center justify-end">
-                          <Link href={`/workout-info/${p.id}`}>
-                            <button className="text-sm font-semibold font-inter border border-white rounded-full px-3 py-2 hover:bg-gray-600 cursor-pointer">
+                        <div className="flex gap-2 items-center justify-start sm:justify-end flex-wrap">
+                          <Link 
+                            href={`/workout-info/${p.id}`}
+                            className="text-sm font-semibold font-inter border border-white rounded-full px-3 py-2 hover:bg-gray-600 cursor-pointer"
+                          >
                               View Details
-                            </button>
                           </Link>
 
                           <button
@@ -266,7 +284,7 @@ const MyPlanPage = () => {
                           </button>
                           <CiCircleRemove
                             onClick={() => handleRemovePlan(p)}
-                            className="text-4xl text-red-400 hover:text-red-700 cursor-pointer"
+                            className="text-4xl text-red-400 hover:text-red-700 cursor-pointer "
                           />
                         </div>
                       </div>
@@ -282,11 +300,12 @@ const MyPlanPage = () => {
                 <p className="font-inter text-[#c4c8d3]">
                   Browse the library and add a lift to get today moving.
                 </p>
-                <Link href="/">
-                  <button className="bg-accent hover:bg-[#9ab32d] cursor-pointer text-black text-sm font-semibold px-3 py-2 rounded-2xl font-inter">
+                <Link 
+                  href="/"
+                  className="bg-accent hover:bg-[#9ab32d] cursor-pointer text-black text-sm font-semibold px-3 py-2 rounded-2xl font-inter"
+                >
                     {" "}
                     Go to workouts{" "}
-                  </button>
                 </Link>
               </div>
             ))}
@@ -294,6 +313,7 @@ const MyPlanPage = () => {
           {/* -----------------------------     Saved For Later Area     ----------------------- */}
 
           {activeTab === "saved" && (
+            save.length > 0 ? (
             <div className="space-y-5">
               {sortSaved.map((s) => {
                 return (
@@ -301,9 +321,9 @@ const MyPlanPage = () => {
                     key={s.id}
                     className="p-4 bg-base-200 border border-gray-800 rounded-xl text-white"
                   >
-                    <div className="grid grid-cols-2 justify-between">
+                    <div className="grid sm:grid-cols-2 gap-4 justify-between">
                       {/* Left Side - Image & Info */}
-                      <div className="flex gap-4">
+                      <div className="flex gap-4 flex-wrap">
                         <Image
                           src={s.image}
                           alt={s.name}
@@ -311,7 +331,7 @@ const MyPlanPage = () => {
                           height={100}
                           className="h-20 w-30 rounded-xl object-cover"
                         />
-                        <div className="space-y-1">
+                        <div className="space-y-1 text-start">
                           <div className="flex gap-4 items-center">
                             <h3 className="text-xl font-bold font-oswald tracking-wide transition-all">
                               {s.name}
@@ -323,7 +343,7 @@ const MyPlanPage = () => {
                           </p>
 
                           {/* Duration, Calory & Rating */}
-                          <div className="flex items-center gap-3 mt-3 text-sm">
+                          <div className="flex items-center gap-3 mt-3 text-sm flex-wrap">
                             <span className="flex items-center gap-1 ">
                               <TiStopwatch className="text-accent" />{" "}
                               {s.duration}
@@ -340,11 +360,12 @@ const MyPlanPage = () => {
                       </div>
 
                       {/* Right side - Action Button */}
-                      <div className="flex gap-2 items-center justify-end">
-                        <Link href={`/workout-info/${s.id}`}>
-                          <button className="text-sm font-semibold font-inter border border-white rounded-full px-3 py-2 hover:bg-gray-600 cursor-pointer">
+                      <div className="flex gap-2 items-center justify-evenly sm:justify-end flex-wrap">
+                        
+                        <Link 
+                          href={`/workout-info/${s.id}`} 
+                          className="text-sm font-semibold font-inter border border-white rounded-full px-3 py-2 hover:bg-gray-600 cursor-pointer">
                             View Details
-                          </button>
                         </Link>
 
                         <CiCircleRemove
@@ -357,7 +378,23 @@ const MyPlanPage = () => {
                 );
               })}
             </div>
-          )}
+            ) : (
+              <div className="container mx-auto bg-base-200 p-10 text-center space-y-3 rounded-2xl">
+                <h3 className="text-xl text-amber-50 font-medium font-oswald uppercase tracking-wider">
+                  Nothing here yet{" "}
+                </h3>
+                <p className="font-inter text-[#c4c8d3]">
+                  Browse the library and add a lift to get today moving.
+                </p>
+                <Link 
+                  href="/"
+                  className="bg-accent hover:bg-[#9ab32d] cursor-pointer text-black text-sm font-semibold px-3 py-2 rounded-2xl font-inter"
+                >
+                    {" "}
+                    Go to workouts{" "}
+                </Link>
+              </div>
+            ))}
         </div>
       </div>
     </section>

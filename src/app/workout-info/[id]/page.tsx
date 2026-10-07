@@ -2,7 +2,6 @@ import PlanButton from "@/components/Buttons/PlanButton";
 import SaveButton from "@/components/Buttons/SaveButton";
 import { IWorkoutType } from "@/types/workout-type";
 import Image from "next/image";
-import React from "react";
 
 interface IWorkoutInfoPageParams {
   id: string;

@@ -23,7 +23,13 @@ const PlanButton = ({workout}: {workout:IWorkoutType}) => {
           return;
         }
         toast.success(`${workout.name} is added in your Today's Plan`)
-        setPlan([...plan, workout]);
+        setPlan((prev) => {
+        if (prev.length >= 5) {
+          return prev;
+        }
+
+        return [...prev, workout];
+      });
     }
     
       // hydration error solving
@@ -35,10 +41,10 @@ const PlanButton = ({workout}: {workout:IWorkoutType}) => {
   return (
     <button 
       onClick={handlePlan}
-      disabled={isExistPlan}
+      disabled={isExistPlan || plan.length >= 5}
       className="rounded-lg bg-accent px-4 py-2.5 text-sm font-bold text-black transition hover:bg-lime-600 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
     > 
-      {isExistPlan === false ? "Add to today's plan": "✔ Already added in your plan" }
+      {isExistPlan ? "✔ Already added in your plan" : plan.length >= 5 ? "Plan is full (5/5)" : "Add to today's plan" }
     </button>
   );
 };

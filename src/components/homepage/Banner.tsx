@@ -20,7 +20,10 @@ const Banner = () => {
             <p className="py-6 text-[#c4c8d3] font-inter">
               FitLog is a dark, no-nonsense gym companion: pick a lift, lock it into today&apos;s plan, and watch the week&apos;s work add up.
             </p>
-            <button className="btn  bg-accent text-black font-bold hover:bg-[#9ab32d]">Browse Workouts</button>
+            <a href="#library">
+              <button className="btn  bg-accent text-black font-bold hover:bg-[#9ab32d]">Browse Workouts</button>
+            </a>
+            
           </div>
 
             {/* Banner Image */}
