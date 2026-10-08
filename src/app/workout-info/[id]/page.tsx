@@ -12,12 +12,16 @@ interface IWorkoutInfoPage {
 }
 
 const getLibrary = async (): Promise<IWorkoutType[]> => {
-  const response: Response = await fetch(
-    "https://api.api-store.workers.dev/api/fitlog"
-  );
+  try {
+    const response: Response = await fetch(
+      "https://api.abcz.workers.dev/api/fitlog",
+    );
 
-  const data: IWorkoutType[] = await response.json();
-  return data;
+    const data: IWorkoutType[] = await response.json();
+    return data;
+  } catch {
+    return [];
+  }
 };
 
 const WorkoutInfoPage = async ({ params }: IWorkoutInfoPage) => {
@@ -26,7 +30,7 @@ const WorkoutInfoPage = async ({ params }: IWorkoutInfoPage) => {
   const libraryData: IWorkoutType[] = await getLibrary();
 
   const workout: IWorkoutType | undefined = libraryData.find(
-    (card: IWorkoutType): boolean => card.id === Number(id)
+    (card: IWorkoutType): boolean => card.id === Number(id),
   );
 
   if (!workout) {
@@ -43,7 +47,6 @@ const WorkoutInfoPage = async ({ params }: IWorkoutInfoPage) => {
     <main className="min-h-screen bg-[#0d0f12] px-4 py-8 pt-20 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
-
           {/* ================= IMAGE ================= */}
           <div className="lg:sticky lg:top-25 overflow-hidden rounded-xl border border-gray-700/70 bg-[#191c21]">
             <Image
@@ -57,7 +60,6 @@ const WorkoutInfoPage = async ({ params }: IWorkoutInfoPage) => {
 
           {/* ================= WORKOUT INFO ================= */}
           <div className="pt-1">
-
             {/* Title */}
             <h1 className="text-3xl font-black uppercase tracking-wide sm:text-4xl">
               {workout.name}
@@ -82,7 +84,6 @@ const WorkoutInfoPage = async ({ params }: IWorkoutInfoPage) => {
 
             {/* ================= STATS ================= */}
             <div className="mt-5 overflow-hidden rounded-xl border border-gray-700/70 bg-[#191c21]">
-
               {/* Equipment */}
               <div className="grid grid-cols-2 border-b border-gray-700/70">
                 <div className="px-3 py-4">
@@ -195,14 +196,14 @@ const WorkoutInfoPage = async ({ params }: IWorkoutInfoPage) => {
 
                       <span>{instruction}</span>
                     </li>
-                  )
+                  ),
                 )}
               </ol>
             </div>
 
             {/* ================= ACTION BUTTONS ================= */}
             <div className="mt-6 flex flex-wrap gap-3">
-              <PlanButton workout ={workout}></PlanButton>
+              <PlanButton workout={workout}></PlanButton>
 
               <SaveButton workout={workout}></SaveButton>
             </div>

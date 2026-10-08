@@ -1,7 +1,6 @@
 import { IWorkoutType } from "@/types/workout-type";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 
 interface IWorkoutCardProps {
   card: IWorkoutType;

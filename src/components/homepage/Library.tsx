@@ -4,7 +4,7 @@ import { IWorkoutType } from "@/types/workout-type";
 
 const getLibrary = async () => {
   const response = await fetch(
-    "https://api.api-store.workers.dev/api/fitlog"
+    "https://api.abcz.workers.dev/api/fitlog"
   );
 
   const data = await response.json();
@@ -13,7 +13,7 @@ const getLibrary = async () => {
 
 const Library = async () => {
   const libraryData = await getLibrary();
-  console.log(libraryData)
+  // console.log(libraryData)
 
   return (
     <section id="library" className="container mx-auto scroll-mt-14">
